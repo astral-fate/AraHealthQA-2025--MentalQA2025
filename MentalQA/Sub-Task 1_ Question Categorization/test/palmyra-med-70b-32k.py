@@ -28,7 +28,7 @@ MODEL_NAME = "writer/palmyra-med-70b-32k"
 # --- File Paths ---
 TEST_DATA_PATH = '/content/drive/MyDrive/AraHealthQA/MentalQA/Task1/data/subtask1_input_test.tsv'
 TEST_LABELS_PATH = '/content/drive/MyDrive/AraHealthQA/MentalQA/Task1/data/subtask1_output_test.tsv'
-OUTPUT_DIR = '/content/drive/MyDrive/AraHealthQA/MentalQA/Task1/results/' # Changed to match your results folder
+OUTPUT_DIR = '/content/drive/MyDrive/AraHealthQA/MentalQA/Task1/results/' 
 
 
 # --- Helper Functions ---
