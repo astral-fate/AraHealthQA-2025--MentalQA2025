@@ -1,3 +1,154 @@
+
+# Cell 1: Installations
+!pip install transformers[torch] accelerate -U
+!pip install optuna
+
+
+# Cell 2: Imports
+import os
+import pandas as pd
+import numpy as np
+import torch
+from torch.utils.data import Dataset
+import torch.nn as nn
+import shutil
+import optuna
+
+# Import from Google Colab's drive module
+from google.colab import drive
+
+# Import Hugging Face Transformers components
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments
+from transformers.modeling_outputs import SequenceClassifierOutput
+from transformers.trainer_callback import EarlyStoppingCallback
+
+from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.metrics import f1_score, classification_report
+from sklearn.model_selection import train_test_split
+
+
+# Cell 3: Mount Drive and Define Paths
+drive.mount('/content/drive')
+
+# --- Configuration ---
+MODEL_NAME = "CAMeL-Lab/bert-base-arabic-camelbert-mix-sentiment"
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {DEVICE}")
+
+# --- File Paths for Google Drive ---
+BASE_DRIVE_DIR = '/content/drive/MyDrive/AraHealthQA/MentalQA/Task1/'
+DATA_PATH = os.path.join(BASE_DRIVE_DIR, 'dev_data.tsv')
+LABELS_PATH = os.path.join(BASE_DRIVE_DIR, 'train_label.tsv')
+TUNING_OUTPUT_DIR = os.path.join(BASE_DRIVE_DIR, 'tuning_output')
+FINAL_MODEL_DIR = os.path.join(BASE_DRIVE_DIR, 'final_model')
+
+# Create directories in your Google Drive if they don't exist
+os.makedirs(TUNING_OUTPUT_DIR, exist_ok=True)
+os.makedirs(FINAL_MODEL_DIR, exist_ok=True)
+
+# Cell 4: Custom Model Definition
+class ImprovedMultiLabelModel(nn.Module):
+    def __init__(self, model_name, num_labels, alpha=1.0, gamma=2.0):
+        super().__init__()
+        # Load the pre-trained model, ignoring size mismatches in the classifier layer
+        self.bert = AutoModelForSequenceClassification.from_pretrained(
+            model_name,
+            num_labels=num_labels,
+            problem_type="multi_label_classification",
+            ignore_mismatched_sizes=True
+        )
+        self.alpha, self.gamma, self.num_labels = alpha, gamma, num_labels
+
+    def focal_loss(self, logits, labels):
+        # A numerically stable implementation of Focal Loss
+        BCE_loss = nn.BCEWithLogitsLoss(reduction='none')(logits, labels)
+        pt = torch.exp(-BCE_loss)
+        return (self.alpha * (1-pt)**self.gamma * BCE_loss).mean()
+
+    def forward(self, input_ids=None, attention_mask=None, labels=None, **kwargs):
+        # Get the raw BERT outputs
+        outputs = self.bert.bert(input_ids=input_ids, attention_mask=attention_mask)
+        sequence_output = outputs.last_hidden_state
+
+        # Use the [CLS] token's representation for classification
+        pooled_output = sequence_output[:, 0]
+        logits = self.bert.classifier(pooled_output)
+
+        loss = None
+        if labels is not None:
+            loss = self.focal_loss(logits, labels)
+
+        return SequenceClassifierOutput(loss=loss, logits=logits, hidden_states=outputs.hidden_states, attentions=outputs.attentions)
+
+# Cell 5: Helper Functions
+def robust_read_lines(file_path):
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return [line.strip() for line in f.readlines()]
+
+def load_and_prepare_data(data_path, labels_path):
+    questions = robust_read_lines(data_path)
+    labels = robust_read_lines(labels_path)
+    if len(questions) != len(labels):
+        raise ValueError("Mismatch in line count between data and labels.")
+    return pd.DataFrame({'text': questions, 'labels_str': labels})
+
+def process_label_strings(label_series):
+    return [
+        [label.strip() for label in s.split(',') if label.strip()]
+        for s in label_series
+    ]
+
+def analyze_label_cooccurrence(labels_matrix, label_names):
+    cooccurrence_matrix = np.dot(labels_matrix.T, labels_matrix)
+    label_frequencies = np.sum(labels_matrix, axis=0)
+    cooccurrence_prob = {}
+    for i, label1 in enumerate(label_names):
+        for j, label2 in enumerate(label_names):
+            if i != j and label_frequencies[i] > 0:
+                # Calculate P(label2 | label1)
+                prob = cooccurrence_matrix[i, j] / label_frequencies[i]
+                if prob > 0.3: # Only consider strong correlations
+                    cooccurrence_prob[(label1, label2)] = prob
+    return cooccurrence_prob
+
+class MentalQADataset(Dataset):
+    def __init__(self, encodings, labels):
+        self.encodings = encodings
+        self.labels = labels
+
+    def __getitem__(self, idx):
+        item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
+        item['labels'] = torch.tensor(self.labels[idx], dtype=torch.float)
+        return item
+
+    def __len__(self):
+        return len(self.labels)
+
+def adaptive_threshold_prediction(logits, label_names, cooccurrence_prob, base_threshold=0.5):
+    probs = 1 / (1 + np.exp(-logits))
+    predictions = []
+    for i in range(len(probs)):
+        sample_probs = probs[i]
+        predicted_labels = {label_names[idx] for idx in np.where(sample_probs >= base_threshold)[0]}
+
+        for label in list(predicted_labels):
+            for idx, other_label in enumerate(label_names):
+                if other_label not in predicted_labels and (label, other_label) in cooccurrence_prob:
+                    cooccur_prob = cooccurrence_prob[(label, other_label)]
+                    adjusted_threshold = base_threshold * (1 - cooccur_prob * 0.5)
+                    if sample_probs[idx] >= adjusted_threshold:
+                        predicted_labels.add(other_label)
+
+        if not predicted_labels:
+            predicted_labels.add(label_names[np.argmax(sample_probs)])
+
+        if len(predicted_labels) > 4:
+            label_prob_pairs = sorted([(label, sample_probs[label_names.index(label)]) for label in predicted_labels], key=lambda x: x[1], reverse=True)
+            predicted_labels = {pair[0] for pair in label_prob_pairs[:4]}
+
+        predictions.append(sorted(list(predicted_labels)))
+    return predictions
+
 # Cell 6: Main Execution Logic
 # Global variables to be set by the initial data load
 mlb = None
