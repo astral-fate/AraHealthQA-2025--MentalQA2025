@@ -1,4 +1,4 @@
-
+## 1st attempt: The AraBERTv2 kfold ensemble used the same hyperparameters as the optimized single AraBERTv2 model for consistency
 ## fine-tuning mentalQA usinf arabert2 using k-folds ensemble 
 
 # fine-tuning parameters
@@ -69,6 +69,23 @@ weighted avg       0.21      0.40      0.26       260
 
 
 ```
+
+# 2nd attempt; The AraBERTv2 kfold ensemble used the hyperparameters as the optimized single CAMERL-BERT model
+
+# hyper-parameters 
+
+```
+--- Using Optimized Hyperparameters ---
+learning_rate: 3.26662135376377e-05
+num_train_epochs: 10
+weight_decay: 0.0199876722361212
+focal_alpha: 1.194492474673312
+
+```
+
+# dev reuslt
+
+Overall Weighted F1 Score across all folds: 0.6183
 # Results
 
 - 🥁 Final Ensembled Test Set Results 🥁 ---
