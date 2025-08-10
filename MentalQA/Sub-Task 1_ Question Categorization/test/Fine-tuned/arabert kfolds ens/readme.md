@@ -69,3 +69,12 @@ weighted avg       0.21      0.40      0.26       260
 
 
 ```
+# Results
+
+- 🥁 Final Ensembled Test Set Results 🥁 ---
+- Weighted F1 Score: 0.3283
+- Jaccard Score:     0.2382
+
+# notebook
+
+https://colab.research.google.com/drive/19NClhPis--SpLjxllBNlOiQoWl22l77w
