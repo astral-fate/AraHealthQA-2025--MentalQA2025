@@ -31,7 +31,7 @@ MODEL_NAME = 'deepseek-r1-distill-llama-70b'
 # --- File Paths ---
 # Corrected path from 'myDrive' to 'MyDrive'
 DEV_DATA_PATH = '/content/drive/MyDrive/AraHealthQA/MentalQA/Task1/dev_data.tsv'
-DEV_LABELS_PATH = '/content/drive/MyDrive/AraHealthQA/MentalQA/Task1/dev_label.tsv'
+DEV_LABELS_PATH = '/content/drive/MyDrive/AraHealthQA/MentalQA/Task1/train_label.tsv'
 PREDICTION_OUTPUT_PATH = '/content/drive/MyDrive/AraHealthQA/MentalQA/Task1/output/prediction_subtask_1.tsv'
 
 # --- Helper Functions ---
