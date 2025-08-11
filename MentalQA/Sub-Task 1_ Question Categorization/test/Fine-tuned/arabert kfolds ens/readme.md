@@ -85,12 +85,53 @@ focal_alpha: 1.194492474673312
 
 # dev reuslt
 
-Overall Weighted F1 Score across all folds: 0.6183
-# Results
 
-- 🥁 Final Ensembled Test Set Results 🥁 ---
+
+Overall Weighted F1 Score across all folds: 0.6183
+```
+--- Overall Per-Label Performance (based on out-of-fold predictions) ---
+              precision    recall  f1-score   support
+
+           A       0.62      0.96      0.76       197
+           B       0.61      0.98      0.75       203
+           C       0.04      0.05      0.04        22
+           D       0.30      0.65      0.41        80
+           E       0.36      0.72      0.48        87
+           F       0.00      0.00      0.00        14
+           Z       0.00      0.00      0.00         6
+
+   micro avg       0.49      0.83      0.62       609
+   macro avg       0.28      0.48      0.35       609
+weighted avg       0.50      0.83      0.62       609
+ samples avg       0.54      0.87      0.62       609
+```
+
+
+
+
+# test result
+
 - Weighted F1 Score: 0.3283
 - Jaccard Score:     0.2382
+
+```
+--- Per-Label Performance (Test Set) ---
+              precision    recall  f1-score   support
+
+           A       0.56      1.00      0.72        84
+           B       0.00      0.00      0.00        85
+           C       0.06      0.80      0.12        10
+           D       0.23      1.00      0.37        34
+           E       0.44      0.21      0.29        38
+           F       0.04      1.00      0.08         6
+           Z       0.00      0.00      0.00         3
+
+   micro avg       0.23      0.54      0.33       260
+   macro avg       0.19      0.57      0.22       260
+weighted avg       0.28      0.54      0.33       260
+ samples avg       0.23      0.49      0.31       260
+
+```
 
 # notebook
 
