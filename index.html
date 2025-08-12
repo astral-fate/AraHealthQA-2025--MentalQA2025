@@ -149,7 +149,7 @@
 
             <!-- Arrow to final merge -->
             <line x1="300" y1="610" x2="300" y2="680" class="arrow-line" />
-            <line x1="300" y1="680" x2="550" y2="680" class="arrow-line" marker-end="url(#arrow)" />
+            <line x1="300" y1="680" x2="600" y2="680" class="arrow-line" />
         </g>
 
         <!-- Few-Shot Learning Branch -->
@@ -165,9 +165,10 @@
             <!-- Arrow from prompt -->
             <line x1="900" y1="360" x2="900" y2="400" class="arrow-line" marker-end="url(#arrow)" />
 
-            <!-- NVIDIA API -->
+            <!-- LLM API Providers -->
             <rect x="800" y="400" width="200" height="60" class="box-style api-box" />
-            <text x="900" y="435" class="box-text">NVIDIA NIM API</text>
+            <text x="900" y="425" class="box-text">LLM APIs Providers</text>
+            <text x="900" y="445" class="label-text">(NVIDIA, HuggingFace, etc)</text>
 
             <!-- Arrow from API -->
             <line x1="900" y1="460" x2="900" y2="500" class="arrow-line" marker-end="url(#arrow)" />
@@ -181,25 +182,25 @@
             
             <!-- Arrow to final merge -->
             <line x1="900" y1="610" x2="900" y2="680" class="arrow-line" />
-            <line x1="900" y1="680" x2="650" y2="680" class="arrow-line" marker-end="url(#arrow)" />
+            <line x1="900" y1="680" x2="600" y2="680" class="arrow-line" />
         </g>
+
+        <!-- Arrow to Output -->
+        <line x1="600" y1="680" x2="600" y2="720" class="arrow-line" marker-end="url(#arrow)" />
 
         <!-- Output -->
         <rect x="525" y="720" width="150" height="60" class="box-style output-box" />
         <text x="600" y="745" class="box-text">Multi-Label Output</text>
         <text x="600" y="765" class="label-text">(Set of Predicted Labels)</text>
         
-        <!-- Arrow to Output -->
-        <line x1="600" y1="680" x2="600" y2="720" class="arrow-line" />
+        <!-- Arrow from Output to Evaluation -->
+        <line x1="600" y1="780" x2="600" y2="810" class="arrow-line" marker-end="url(#arrow)" />
 
         <!-- Evaluation -->
         <rect x="500" y="810" width="200" height="60" class="box-style data-box" />
         <text x="600" y="835" class="box-text">Evaluation</text>
         <text x="600" y="855" class="label-text">(Weighted F1, Jaccard Score)</text>
         
-        <!-- Arrow from Output to Evaluation -->
-        <line x1="600" y1="780" x2="600" y2="810" class="arrow-line" marker-end="url(#arrow)" />
-
     </svg>
 </body>
 </html>
