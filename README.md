@@ -10,7 +10,7 @@
 
 [![Paper](https://img.shields.io/badge/arXiv-25XX.XXXXX-b31b1b.svg)](https://arxiv.org/abs/25XX.XXXXX)
 [![Code](https://img.shields.io/badge/GitHub-Code-blue)](https://github.com/astral-fate/MentalQA2025/)
-[![HuggingFace](https://img.shields.io/badge/HuggingFace-Page-F9D371)]([https://huggingface.co/BiMediX](https://huggingface.co/collections/FatimahEmadEldin/sakinah-ai-at-mentalqa-689b2d707791cea458e97aaf/))
+[![HuggingFace](https://img.shields.io/badge/HuggingFace-Page-F9D371)](https://huggingface.co/collections/FatimahEmadEldin/sakinah-ai-at-mentalqa-689b2d707791cea458e97aaf/)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey)](https://github.com/astral-fate/mentalqa2025/blob/main/LICENSE)
 
 ---
